@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welfare Society 2026</title>
+    <style>
+        @import url('https://docs.google.com/spreadsheets/d/1K_VDk7w_u3vB6vj_k1inyBjxjPBT2WWkx296x9bypAg/edit?usp=sharing');
+
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Abhaya Libre', serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInDown 1.2s forwards;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .table-wrapper {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            animation: fadeInUp 1s forwards 1.2s;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse; /* Merges borders */
+            color: #000000; /* Solid black text */
+            border: 2px solid #000000; /* Outer border */
+        }
+
+        th {
+            background-color: #e2e8f0;
+            color: #000000;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid #000000; /* Vertical and horizontal borders for headers */
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+
+        td {
+            padding: 12px;
+            border: 2px solid #000000; /* Clear vertical and horizontal lines for all cells */
+            text-align: center;
+            font-weight: 700; /* Bold text for visibility */
+            font-size: 1.1rem;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover td {
+            background-color: #cbd5e1;
+        }
+
+        @keyframes fadeInDown {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loading {
+            font-size: 1.2rem;
+            color: #000000;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>සුබසාධන සංගමයේ සාමාජික මුදල් ලබා දීම 2026</h1>
+    
+    <div class="table-wrapper">
+        <div id="loader" class="loading">දත්ත පූරණය වෙමින් පවතී...</div>
+        <table id="data-table">
+            <!-- Data from Google Sheets will appear here -->
+        </table>
+    </div>
+</div>
+
+<script>
+    const SHEET_ID = '1K_VDk7w_u3vB6vj_k1inyBjxjPBT2WWkx296x9bypAg';
+    const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
+
+    async function fetchData() {
+        try {
+            const response = await fetch(CSV_URL);
+            const data = await response.text();
+            const rows = data.split(/\r?\n/).map(row => {
+                // Handling CSV quotes and commas
+                return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell => cell.replace(/"/g, '').trim());
+            });
+            
+            renderTable(rows);
+        } catch (error) {
+            document.getElementById('loader').innerText = "දත්ත ලබාගැනීමට නොහැකි විය.";
+            console.error(error);
+        }
+    }
+
+    function renderTable(data) {
+        const table = document.getElementById('data-table');
+        const loader = document.getElementById('loader');
+        if (loader) loader.style.display = 'none';
+
+        let html = '';
+        data.forEach((row, index) => {
+            if (row.length === 1 && row[0] === "") return;
+            
+            if (index === 0) {
+                html += '<thead><tr>';
+                row.forEach(cell => html += `<th>${cell}</th>`);
+                html += '</tr></thead><tbody>';
+            } else {
+                html += '<tr>';
+                row.forEach(cell => html += `<td>${cell}</td>`);
+                html += '</tr>';
+            }
+        });
+        html += '</tbody>';
+        table.innerHTML = html;
+    }
+
+    fetchData();
+</script>
+
+</body>
+</html>
